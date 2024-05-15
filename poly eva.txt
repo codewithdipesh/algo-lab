@@ -1,0 +1,19 @@
+//Polynomial Evaluation
+#include<stdio.h>
+int main(){
+int n;
+printf("Enter size : ");
+scanf("%d",&n);
+int poly[n];
+printf("Enter polynomials : ");
+for(int i=0;i<n;i++){
+scanf("%d",&poly[i]);
+}
+int x,p=poly[n-1];
+printf("Enter x : ");
+scanf("%d",&x);
+for(int i=n-1;i>=1;--i){
+p = p*x + poly[i-1];
+}
+printf("%d",p);
+}

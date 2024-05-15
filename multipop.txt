@@ -1,0 +1,42 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct stack{
+int size;
+int top;
+int *a;
+}stack;
+void init(stack *s,int si){
+s->size=si;
+s->top=-1;
+s->a=(int*)malloc(s->size*sizeof(int));
+}
+int isfull(stack *s){
+return(s->top==s->size-1);
+}
+int isempty(stack *s){
+return(s->top==-1);
+}
+int push(stack *s,int v){
+if(isfull(s))
+return 0;
+else{
+s->top++;
+s->a[s->top]=v;
+return 1;
+}
+}
+int pop(stack *s){
+if(isempty(s))
+return 0;
+else{
+int item=s->a[s->top--];
+return item;
+}
+}
+void multipop(stack *s,int k){
+while(!isempty(s) && k>0){
+int c=pop(s);
+printf("\nPoped %d",c);
+k=k-1;
+}
+}

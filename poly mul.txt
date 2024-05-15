@@ -1,0 +1,89 @@
+//Polynomial Multiplication using in O(nlogn) time
+#include <iostream>
+#include <complex>
+#include <cmath>
+using namespace std;
+const double PI = acos(-1);
+complex<double>* FFT(complex<double>* S, int N, bool invert) {
+complex<double>* A = new complex<double>[N];
+if (N == 1) {
+A[0] = S[0];
+return A;
+} else {
+complex<double>* X = new complex<double>[N / 2];
+complex<double>* Y = new complex<double>[N / 2];
+for (int i = 0; i < N / 2; ++i) {
+X[i] = S[2 * i];
+Y[i] = S[2 * i + 1];
+}
+complex<double>* B = FFT(X, N / 2, invert);
+complex<double>* C = FFT(Y, N / 2, invert);
+delete[] X;
+delete[] Y;
+double theta = 2 * PI / N * (invert ? -1 : 1);
+complex<double> P(1), W(cos(theta), sin(theta));
+for (int r = 0; r < N / 2; ++r) {
+complex<double> term = P * C[r];
+A[r] = B[r] + term;
+A[r + N / 2] = B[r] - term;
+if (invert) {
+A[r] /= 2;
+A[r + N/2] /= 2;
+}
+P = P * W;
+}
+delete[] B;
+delete[] C;
+return A;
+}
+}
+void multiply_polynomials(const double* p1, int n1, const double* p2, int n2, double* result) {
+int N = 1;
+while (N < n1 + n2 - 1) N *= 2;
+complex<double>* A = new complex<double>[N];
+complex<double>* B = new complex<double>[N];
+for (int i = 0; i < N; ++i) {
+A[i] = (i < n1) ? complex<double>(p1[i], 0) : 0;
+B[i] = (i < n2) ? complex<double>(p2[i], 0) : 0;
+}
+complex<double>* fft_A = FFT(A, N, false);
+complex<double>* fft_B = FFT(B, N, false);
+delete[] A;
+delete[] B;
+for (int i = 0; i < N; ++i) {
+fft_A[i] *= fft_B[i];
+}
+delete[] fft_B;
+complex<double>* ifft_result = FFT(fft_A, N, true);
+delete[] fft_A;
+for (int i = 0; i < n1 + n2 - 1; ++i) {
+result[i] = ifft_result[i].real();
+}
+delete[] ifft_result;
+}
+int main() {
+int n1,n2;
+cout<<"enter the size of First polynomial : ";
+cin>>n1;
+double p1[n1];
+cout<<"enter First polynomial : ";
+for(int i=0;i<n1;i++){
+cin>>p1[i];
+}
+cout<<"enter the size of second polynomial : ";
+cin>>n2;
+double p2[n2];
+cout<<"enter second polynomial : ";
+for(int i=0;i<n2;i++){
+cin>>p2[i];
+}
+int n_result = n1 + n2 - 1;
+double result[n_result];
+multiply_polynomials(p1, n1, p2, n2, result);
+cout << "Resulting polynomial coefficients:" << endl;
+for (int i = 0; i < n_result; ++i) {
+cout << result[i] << " ";
+}
+cout << endl;
+return 0;
+}
